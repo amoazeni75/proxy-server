@@ -13,7 +13,7 @@ public class ScrollablePanel extends JPanel {
     public ScrollablePanel(Dimension dim){
         super(new BorderLayout());
         setPreferredSize(dim);
-        itemsList = new ListItemPanel();
+        itemsList = new ListItemPanel(dim);
         add(itemsList,BorderLayout.CENTER);
         pane = new JScrollPane(itemsList);
         pane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
