@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class MainFrame extends JFrame implements ActionListener, MouseListener, WindowListener {
@@ -24,14 +23,16 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
     private JButton addURLBTN;
     private JButton exitBTN;
 
+    //panels
+    private ScrollablePanel urlsPanel;
+    private ScrollablePanel categoriesPanel;
+
     private SpringLayout sp;
     public MainFrame() throws IOException {
         super("JProxy Server");
-
-
         intSystemTry();
         setIconImage(new ImageIcon("./icons/appIcon.png").getImage());
-        this.setPreferredSize(new Dimension(500,600));
+        this.setPreferredSize(new Dimension(520,600));
         sp = new SpringLayout();
         this.setLayout(sp);
         this.setResizable(false);
@@ -123,6 +124,20 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
         sp.putConstraint(SpringLayout.WEST, addCategoryBTN, 10, SpringLayout.EAST, startStopBTN);
         sp.putConstraint(SpringLayout.WEST, addURLBTN, 10, SpringLayout.EAST, addCategoryBTN);
         sp.putConstraint(SpringLayout.WEST, exitBTN, -10 -btnSize, SpringLayout.EAST, this);
+
+        //init panels
+        urlsPanel = new URLsPanel(new Dimension(350, 485));
+        categoriesPanel = new CategoryPanel(new Dimension(150, 485));
+
+        add(urlsPanel);
+        add(categoriesPanel);
+
+        sp.putConstraint(SpringLayout.NORTH, urlsPanel, 10, SpringLayout.SOUTH, startStopBTN);
+        sp.putConstraint(SpringLayout.NORTH, categoriesPanel, 10, SpringLayout.SOUTH, startStopBTN);
+
+        sp.putConstraint(SpringLayout.WEST, categoriesPanel, 5, SpringLayout.WEST, this);
+        sp.putConstraint(SpringLayout.WEST, urlsPanel, 5, SpringLayout.EAST, categoriesPanel);
+
     }
 
     public void showGUI(){
