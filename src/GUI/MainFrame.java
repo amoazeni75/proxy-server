@@ -28,7 +28,7 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
     private ScrollablePanel categoriesPanel;
 
     private SpringLayout sp;
-    public MainFrame() throws IOException {
+    public MainFrame() throws IOException, ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         super("JProxy Server");
         intSystemTry();
         setIconImage(new ImageIcon("./icons/appIcon.png").getImage());
@@ -76,7 +76,10 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
     /**
      * setup buttons location
      */
-    private void initComponent(){
+    private void initComponent() throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
+        //set look and feel
+        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+
         //init buttons
         startStopBTN = new JButton(new ImageIcon("./icons/stop.png"));
         addCategoryBTN = new JButton(new ImageIcon("./icons/category-add-button.png"));
@@ -107,6 +110,12 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
         add(addCategoryBTN);
         add(addURLBTN);
         add(exitBTN);
+
+        //set focus
+        startStopBTN.setFocusPainted(false);
+        addCategoryBTN.setFocusPainted(false);
+        addURLBTN.setFocusPainted(false);
+        exitBTN.setFocusPainted(false);
 
         //remove buttons border
         startStopBTN.setBorderPainted(false);
@@ -146,6 +155,12 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
         this.setLocationRelativeTo(null);
     }
 
+    private void addNewCategory(){
+        String inputValue = JOptionPane.showInputDialog("Please input the name of Category");
+        if(inputValue != null &&!inputValue.equals("")){
+
+        }
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -163,11 +178,16 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
         if(e.getSource() == trayIcon && SwingUtilities.isLeftMouseButton(e)){
             showGUI();
         }
+        else if(e.getSource().equals(addCategoryBTN)){
+            addNewCategory();
+        }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
+        if(e.getSource().equals(addCategoryBTN)){
 
+        }
     }
     @Override
     public void mouseReleased(MouseEvent e) {

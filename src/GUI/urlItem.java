@@ -21,6 +21,7 @@ public class urlItem extends ListItem {
         urlText = new JTextField();
         deleteBTN = new JButton(new ImageIcon("./icons/delete.png"));
 
+        deleteBTN.setFocusPainted(false);
         //add to layout
         add(selectChk);
         add(urlText);
