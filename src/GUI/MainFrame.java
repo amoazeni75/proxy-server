@@ -1,5 +1,7 @@
 package GUI;
 
+import Models.Backend;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -24,8 +26,11 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
     private JButton exitBTN;
 
     //panels
-    private ScrollablePanel urlsPanel;
-    private ScrollablePanel categoriesPanel;
+    public ScrollablePanel urlsPanel;
+    public ScrollablePanel categoriesPanel;
+
+    //backend
+    private Backend backend;
 
     private SpringLayout sp;
     public MainFrame() throws IOException, ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
@@ -38,6 +43,7 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
         this.setResizable(false);
         this.addWindowListener(this);
         initComponent();
+        backend = new Backend(new Dimension(520, 600),350,150,this);
     }
 
     /**
@@ -158,7 +164,7 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
     private void addNewCategory(){
         String inputValue = JOptionPane.showInputDialog("Please input the name of Category");
         if(inputValue != null &&!inputValue.equals("")){
-
+            backend.addCategory(inputValue);
         }
     }
 

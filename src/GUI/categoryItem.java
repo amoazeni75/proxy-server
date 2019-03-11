@@ -6,9 +6,11 @@ import java.awt.*;
 public class categoryItem extends ListItem {
     private JCheckBox selectChk;
     private JLabel categoryLBL;
+    private String categoryName;
 
-    public categoryItem(Dimension dim) {
+    public categoryItem(Dimension dim, String catName) {
         super(dim);
+        categoryName = catName;
         setupComponent();
     }
     private void setupComponent(){
@@ -32,9 +34,14 @@ public class categoryItem extends ListItem {
         sp.putConstraint(SpringLayout.WEST, selectChk, 10, SpringLayout.WEST, this);
         sp.putConstraint(SpringLayout.WEST, categoryLBL, 5, SpringLayout.EAST,selectChk);
 
+        categoryLBL.setText(categoryName);
     }
 
     public void setLabelText(String s){
         categoryLBL.setText(s);
+    }
+
+    public  String getCategoryName(){
+        return categoryName;
     }
 }

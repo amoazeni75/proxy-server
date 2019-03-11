@@ -8,10 +8,12 @@ public class urlItem extends ListItem {
     private JTextField urlText;
     private int textWidth;
     private JButton deleteBTN;
+    private String UrlAddress;
 
-    public urlItem(Dimension dim) {
+    public urlItem(Dimension dim, String urlAdd) {
         super(dim);
         textWidth = (int)(dim.width * 0.75);
+        UrlAddress = urlAdd;
         setupComponent();
     }
 

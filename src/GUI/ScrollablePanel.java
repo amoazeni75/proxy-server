@@ -6,10 +6,9 @@ import java.util.ArrayList;
 
 public class ScrollablePanel extends JPanel {
     protected JScrollPane pane;
-    protected ListItemPanel itemsList;
+    public ListItemPanel itemsList;
     protected SpringLayout sp;
     protected Dimension screenSize;
-    protected int itemH;
 
     public ScrollablePanel(){
         this(new Dimension(100,100));
@@ -24,7 +23,7 @@ public class ScrollablePanel extends JPanel {
         pane = new JScrollPane(itemsList);
         pane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         add(pane,BorderLayout.CENTER);
-        itemH = 50;
         sp = itemsList.sp;
     }
+
 }

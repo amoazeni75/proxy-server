@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 public class ListItem extends JPanel implements MouseListener {
 
@@ -24,8 +25,6 @@ public class ListItem extends JPanel implements MouseListener {
     }
 
     private void setupComponent(){}
-
-
 
     @Override
     public void mouseClicked(MouseEvent e) {
