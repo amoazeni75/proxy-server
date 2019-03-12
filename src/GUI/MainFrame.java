@@ -187,13 +187,13 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
         else if(e.getSource().equals(addCategoryBTN)){
             addNewCategory();
         }
+        else if(e.getSource().equals(addURLBTN)){
+            AddNewUrlPanel tmp = new AddNewUrlPanel(backend);
+        }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if(e.getSource().equals(addCategoryBTN)){
-
-        }
     }
     @Override
     public void mouseReleased(MouseEvent e) {

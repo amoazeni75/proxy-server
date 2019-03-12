@@ -9,8 +9,8 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Backend {
-    private ArrayList <ListItem> categories;
-    private ArrayList<ArrayList<ListItem>> urls;
+    public ArrayList <ListItem> categories;
+    public ArrayList<ArrayList<ListItem>> urls;
     private Dimension screenDimention;
     private int itemH;
     private int categoryWidth;
