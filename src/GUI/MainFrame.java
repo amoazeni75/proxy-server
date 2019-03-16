@@ -202,6 +202,9 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
         else if(e.getSource().equals(exitBTN)){
             saveAndExit();
         }
+        else if(e.getSource().equals(startStopBTN)){
+            backend.startProxy();
+        }
     }
     @Override
     public void mousePressed(MouseEvent e) {

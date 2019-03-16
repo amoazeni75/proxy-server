@@ -33,6 +33,10 @@ public class Backend {
         urlWidth = urlW;
     }
 
+    /**
+     * add new category
+     * @param categoryName
+     */
     public void addCategory(String categoryName){
         categories.add(new categoryItem(new Dimension(categoryWidth, itemH), categoryName));
         categories.get(categories.size() - 1).addMouseListener(ui.categoriesPanel);
@@ -42,6 +46,11 @@ public class Backend {
         ui.categoriesPanel.itemsList.updateListView(categories);
     }
 
+    /**
+     * add new url to specified category
+     * @param url
+     * @param categoryID
+     */
     public void addNewUrl(String url, int categoryID){
         urls.get(categoryID).add(new urlItem(new Dimension(urlWidth, itemH), url));
         ui.urlsPanel.itemsList.updateListView(urls.get(categoryID));
@@ -52,11 +61,19 @@ public class Backend {
         ui.categoriesPanel.setSelected(null, categoryID);
     }
 
+    /**
+     * delete url from specified category
+     * @param catID
+     * @param UrlID
+     */
     public void deleteURL(int catID, int UrlID){
         urls.get(catID).remove(UrlID);
         ui.urlsPanel.itemsList.updateListView(urls.get(catID));
     }
 
+    /**
+     * load saved categories and all urls belong to it
+     */
     public void loadDataFromFile(){
         Path p = Paths.get("./AppData");
         if(Files.exists(p)){
@@ -77,6 +94,11 @@ public class Backend {
         }
     }
 
+    /**
+     * creat a text file for each category and save all urls belong to it line by line
+     * @throws FileNotFoundException
+     * @throws UnsupportedEncodingException
+     */
     public void saveDataToFile() throws FileNotFoundException, UnsupportedEncodingException {
         final File folder = new File("./AppData");
         for (final File fileEntry : folder.listFiles())
@@ -88,5 +110,20 @@ public class Backend {
                 writer.println(((urlItem)urls.get(i).get(j)).getUrlAddress());
             writer.close();
         }
+    }
+
+    public boolean checkValidityOfURL(String address){
+        for (int i = 0; i < categories.size(); i++) {
+            ArrayList<ListItem> currentURL = urls.get(i);
+            for (int j = 0; j < currentURL.size(); j++) {
+
+            }
+        }
+        return true;
+    }
+
+    public void startProxy(){
+        Runnable r = new SocketListener(this);
+        r.run();
     }
 }
