@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 
 public class AddNewUrlPanel extends JFrame implements MouseListener {
 
@@ -27,6 +26,7 @@ public class AddNewUrlPanel extends JFrame implements MouseListener {
         setPreferredSize(new Dimension(400, 200));
         initComponent();
         this.pack();
+        this.setResizable(false);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setVisible(true);
@@ -53,17 +53,13 @@ public class AddNewUrlPanel extends JFrame implements MouseListener {
         okBtn.setFocusPainted(false);
         cancelBtn.setFocusPainted(false);
 
-        //
-        for (int i = 0; i < backend.categories.size(); ++i)
-            categoryCombo.addItem(backend.categories.get(i).getName());
 
-        //
         okBtn.setPreferredSize(new Dimension(64, 64));
         cancelBtn.setPreferredSize(new Dimension(64, 64));
         urlLbl.setPreferredSize(new Dimension(32, 32));
         categoryLbl.setPreferredSize(new Dimension(32, 32));
         urlTxt.setPreferredSize(new Dimension(300, 20));
-
+        categoryCombo.setPreferredSize(new Dimension(100, categoryCombo.getPreferredSize().height));
         okBtn.addMouseListener(this);
         cancelBtn.addMouseListener(this);
 
@@ -74,8 +70,13 @@ public class AddNewUrlPanel extends JFrame implements MouseListener {
         urlLbl.setIcon(new ImageIcon("./icons/www.png"));
         categoryLbl.setIcon(new ImageIcon("./icons/list.png"));
 
-        sp.putConstraint(SpringLayout.NORTH, okBtn, -10 - okBtn.getPreferredSize().height, SpringLayout.SOUTH, this);
-        sp.putConstraint(SpringLayout.NORTH, cancelBtn, -10 - cancelBtn.getPreferredSize().height, SpringLayout.SOUTH, this);
+        //
+        for (int i = 0; i < backend.categories.size(); ++i)
+            categoryCombo.addItem(((categoryItem)(backend.categories.get(i))).getCategoryName());
+
+        //
+        sp.putConstraint(SpringLayout.NORTH, okBtn, -1 *okBtn.getPreferredSize().height - 35, SpringLayout.SOUTH, this);
+        sp.putConstraint(SpringLayout.NORTH, cancelBtn, -35 - cancelBtn.getPreferredSize().height, SpringLayout.SOUTH, this);
         sp.putConstraint(SpringLayout.WEST, cancelBtn, -10 - cancelBtn.getPreferredSize().width, SpringLayout.EAST, this);
         sp.putConstraint(SpringLayout.WEST, okBtn, -10 - okBtn.getPreferredSize().width, SpringLayout.WEST, cancelBtn);
 
@@ -97,10 +98,10 @@ public class AddNewUrlPanel extends JFrame implements MouseListener {
             hasErr = true;
         if(!hasErr){
             if(text.contains("http://")){
-                if (text.length() <= 7){
+                if (text.length() <= 7)
                     hasErr = true;
             }
-            else
+            else{
                 hasErr = true;
             }
         }

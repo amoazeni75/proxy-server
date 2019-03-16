@@ -6,9 +6,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 
 public class MainFrame extends JFrame implements ActionListener, MouseListener, WindowListener {
     //System Tray
@@ -39,11 +37,12 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
         setIconImage(new ImageIcon("./icons/appIcon.png").getImage());
         this.setPreferredSize(new Dimension(520,600));
         sp = new SpringLayout();
+        backend = new Backend(new Dimension(520, 600),350,150,this);
         this.setLayout(sp);
         this.setResizable(false);
         this.addWindowListener(this);
         initComponent();
-        backend = new Backend(new Dimension(520, 600),350,150,this);
+        backend.loadDataFromFile();
     }
 
     /**
@@ -141,8 +140,8 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
         sp.putConstraint(SpringLayout.WEST, exitBTN, -10 -btnSize, SpringLayout.EAST, this);
 
         //init panels
-        urlsPanel = new URLsPanel(new Dimension(350, 485));
-        categoriesPanel = new CategoryPanel(new Dimension(150, 485));
+        urlsPanel = new URLsPanel(new Dimension(350, 485), backend);
+        categoriesPanel = new CategoryPanel(new Dimension(150, 485), backend);
 
         add(urlsPanel);
         add(categoriesPanel);
@@ -168,14 +167,24 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
         }
     }
 
+    private void saveAndExit(){
+        try {
+            backend.saveDataToFile();
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        } catch (UnsupportedEncodingException e1) {
+            e1.printStackTrace();
+        }
+        System.exit(0);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         // TODO: 2019-03-08 declear functionality of start and stop
         if(e.getSource() == sysTrayStartStop)
             showGUI();
-        // TODO: 2019-03-08 declear functionality of exit
         else if(e.getSource() == sysTrayExit){
-            System.exit(0);
+            saveAndExit();
         }
     }
 
@@ -190,8 +199,10 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
         else if(e.getSource().equals(addURLBTN)){
             AddNewUrlPanel tmp = new AddNewUrlPanel(backend);
         }
+        else if(e.getSource().equals(exitBTN)){
+            saveAndExit();
+        }
     }
-
     @Override
     public void mousePressed(MouseEvent e) {
     }
@@ -211,14 +222,13 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
     public void windowOpened(WindowEvent e) {
 
     }
-
     @Override
     public void windowClosing(WindowEvent e) {
         setVisible(false);
+        saveAndExit();
         try { Thread.sleep(5000); }
         catch (InterruptedException ex) { }
     }
-
     @Override
     public void windowClosed(WindowEvent e) {
 

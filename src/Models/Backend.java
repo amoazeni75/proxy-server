@@ -6,6 +6,10 @@ import GUI.categoryItem;
 import GUI.urlItem;
 
 import java.awt.*;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class Backend {
@@ -15,7 +19,8 @@ public class Backend {
     private int itemH;
     private int categoryWidth;
     private int urlWidth;
-    private MainFrame ui;
+    public MainFrame ui;
+    public int currentSelectedCategory;
 
     public Backend(Dimension screenD, int urlW, int categoryW, MainFrame gui){
         categories =  new ArrayList<>();
@@ -23,12 +28,15 @@ public class Backend {
         ui = gui;
         screenDimention = screenD;
         itemH = 50;
+        currentSelectedCategory = -1;
         categoryWidth = categoryW;
         urlWidth = urlW;
     }
 
     public void addCategory(String categoryName){
         categories.add(new categoryItem(new Dimension(categoryWidth, itemH), categoryName));
+        categories.get(categories.size() - 1).addMouseListener(ui.categoriesPanel);
+        ((categoryItem)(categories.get(categories.size() - 1))).selectChk.addActionListener(ui.categoriesPanel);
         ArrayList<ListItem> tmpUrl = new ArrayList<>();
         urls.add(tmpUrl);
         ui.categoriesPanel.itemsList.updateListView(categories);
@@ -37,5 +45,48 @@ public class Backend {
     public void addNewUrl(String url, int categoryID){
         urls.get(categoryID).add(new urlItem(new Dimension(urlWidth, itemH), url));
         ui.urlsPanel.itemsList.updateListView(urls.get(categoryID));
+        ((urlItem)urls.get(categoryID).get(urls.get(categoryID).size() - 1)).deleteBTN.addMouseListener(ui.urlsPanel);
+        if(((categoryItem)(categories.get(categoryID))).selectChk.isSelected()){
+            ((urlItem)urls.get(categoryID).get(urls.get(categoryID).size() - 1)).selectChk.setSelected(true);
+        }
+        ui.categoriesPanel.setSelected(null, categoryID);
+    }
+
+    public void deleteURL(int catID, int UrlID){
+        urls.get(catID).remove(UrlID);
+        ui.urlsPanel.itemsList.updateListView(urls.get(catID));
+    }
+
+    public void loadDataFromFile(){
+        Path p = Paths.get("./AppData");
+        if(Files.exists(p)){
+            final File folder = new File("./AppData");
+            for (final File fileEntry : folder.listFiles()) {
+                //create category
+                addCategory(fileEntry.getName().substring(0, fileEntry.getName().lastIndexOf('.')));
+                int catID = categories.size() - 1;
+                //add urls
+                try(BufferedReader br = new BufferedReader(new FileReader(fileEntry.getAbsolutePath()))) {
+                    for(String line; (line = br.readLine()) != null; ) {
+                        addNewUrl(line, catID);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void saveDataToFile() throws FileNotFoundException, UnsupportedEncodingException {
+        final File folder = new File("./AppData");
+        for (final File fileEntry : folder.listFiles())
+            fileEntry.delete();
+
+        for (int i = 0; i < categories.size(); i++) {
+            PrintWriter writer = new PrintWriter("./AppData/" + ((categoryItem)categories.get(i)).getCategoryName() + ".txt", "UTF-8");
+            for (int j = 0; j < urls.get(i).size(); j++)
+                writer.println(((urlItem)urls.get(i).get(j)).getUrlAddress());
+            writer.close();
+        }
     }
 }

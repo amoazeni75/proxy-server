@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class categoryItem extends ListItem {
-    private JCheckBox selectChk;
+    public JCheckBox selectChk;
     private JLabel categoryLBL;
     private String categoryName;
 

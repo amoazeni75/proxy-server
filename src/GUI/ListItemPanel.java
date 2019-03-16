@@ -2,13 +2,13 @@ package GUI;
 
 import javax.swing.*;
 import java.awt.*;
+
 import java.util.ArrayList;
 
 public class ListItemPanel extends JPanel {
 
     protected SpringLayout sp;
     protected Dimension screenSize;
-
 
     public ListItemPanel(Dimension dim){
         super();
@@ -20,10 +20,19 @@ public class ListItemPanel extends JPanel {
     }
 
     public void updateListView(ArrayList<ListItem> items){
+        this.setPreferredSize(screenSize);
+        Component[] components = this.getComponents();
+
+        for (Component component : components) {
+            this.remove(component);
+        }
+
+        this.revalidate();
+        this.repaint();
+
         if(items.size() == 0)
             return;
         int itemH = items.get(0).getPreferredSize().height;
-
         for (int i = 0; i < items.size(); i++){
             ListItem li = items.get(i);
             add(li);

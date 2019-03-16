@@ -4,10 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 
 public class urlItem extends ListItem {
-    private JCheckBox selectChk;
+    public JCheckBox selectChk;
     private JTextField urlText;
     private int textWidth;
-    private JButton deleteBTN;
+    public JButton deleteBTN;
     private String UrlAddress;
 
     public urlItem(Dimension dim, String urlAdd) {
@@ -20,7 +20,7 @@ public class urlItem extends ListItem {
     private void setupComponent(){
         //init component
         selectChk = new JCheckBox();
-        urlText = new JTextField();
+        urlText = new JTextField(UrlAddress);
         deleteBTN = new JButton(new ImageIcon("./icons/delete.png"));
 
         deleteBTN.setFocusPainted(false);
@@ -55,5 +55,9 @@ public class urlItem extends ListItem {
 
     public void setUrlText(String txt){
         urlText.setText(txt);
+    }
+
+    public String getUrlAddress(){
+        return urlText.getText();
     }
 }
