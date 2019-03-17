@@ -1,8 +1,10 @@
 package GUI;
 
 import Models.Backend;
+import Models.SocketListener;
 
 import javax.imageio.ImageIO;
+import javax.sound.midi.Soundbank;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -22,6 +24,7 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
     private JButton addCategoryBTN;
     private JButton addURLBTN;
     private JButton exitBTN;
+    private JLabel status;
 
     //panels
     public ScrollablePanel urlsPanel;
@@ -31,13 +34,16 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
     private Backend backend;
 
     private SpringLayout sp;
+
+    public boolean stopStartStatus;
+
     public MainFrame() throws IOException, ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         super("JProxy Server");
         intSystemTry();
         setIconImage(new ImageIcon("./icons/appIcon.png").getImage());
-        this.setPreferredSize(new Dimension(520,600));
+        this.setPreferredSize(new Dimension(520, 600));
         sp = new SpringLayout();
-        backend = new Backend(new Dimension(520, 600),350,150,this);
+        backend = new Backend(new Dimension(520, 600), 350, 150, this);
         this.setLayout(sp);
         this.setResizable(false);
         this.addWindowListener(this);
@@ -49,12 +55,13 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
      * this method provide system Tray Ability that contains two button : stop/start and exit
      * when you press system Tray Icon, Application will be show
      * when you press exit,then Application will close
+     *
      * @throws IOException
      */
     private void intSystemTry() throws IOException {
         if (SystemTray.isSupported()) {
             sysTray = SystemTray.getSystemTray();
-            trayImageIcon  = ImageIO.read(new FileInputStream(new File("./icons/sysTrayIcon.png")));
+            trayImageIcon = ImageIO.read(new FileInputStream(new File("./icons/sysTrayIcon.png")));
 
             sysTrayMenu = new PopupMenu();
 
@@ -71,8 +78,7 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
             trayIcon.addMouseListener(this);
             try {
                 sysTray.add(trayIcon);
-            }
-            catch(AWTException e) {
+            } catch (AWTException e) {
                 System.out.println(e.getMessage());
             }
         }
@@ -90,6 +96,7 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
         addCategoryBTN = new JButton(new ImageIcon("./icons/category-add-button.png"));
         addURLBTN = new JButton(new ImageIcon("./icons/addURL.png"));
         exitBTN = new JButton(new ImageIcon("./icons/exit.png"));
+        status = new JLabel("<html> Status : OFF<BR> Port : <BR> IP : 127.0.0.1<BR>Select checkboxes to allow traffic</html>");
 
         //init buttons size
         int btnSize = 64;
@@ -97,6 +104,7 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
         addCategoryBTN.setPreferredSize(new Dimension(btnSize, btnSize));
         addURLBTN.setPreferredSize(new Dimension(btnSize, btnSize));
         exitBTN.setPreferredSize(new Dimension(btnSize, btnSize));
+        status.setPreferredSize(new Dimension(170, 70));
 
         //set buttons transparent
         startStopBTN.setContentAreaFilled(false);
@@ -115,6 +123,7 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
         add(addCategoryBTN);
         add(addURLBTN);
         add(exitBTN);
+        add(status);
 
         //set focus
         startStopBTN.setFocusPainted(false);
@@ -133,12 +142,13 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
         sp.putConstraint(SpringLayout.NORTH, addCategoryBTN, 10, SpringLayout.NORTH, this);
         sp.putConstraint(SpringLayout.NORTH, addURLBTN, 10, SpringLayout.NORTH, this);
         sp.putConstraint(SpringLayout.NORTH, exitBTN, 10, SpringLayout.NORTH, this);
+        sp.putConstraint(SpringLayout.NORTH, status, 10, SpringLayout.NORTH, this);
 
         sp.putConstraint(SpringLayout.WEST, startStopBTN, 10, SpringLayout.WEST, this);
         sp.putConstraint(SpringLayout.WEST, addCategoryBTN, 10, SpringLayout.EAST, startStopBTN);
         sp.putConstraint(SpringLayout.WEST, addURLBTN, 10, SpringLayout.EAST, addCategoryBTN);
-        sp.putConstraint(SpringLayout.WEST, exitBTN, -10 -btnSize, SpringLayout.EAST, this);
-
+        sp.putConstraint(SpringLayout.WEST, exitBTN, -10 - btnSize, SpringLayout.EAST, this);
+        sp.putConstraint(SpringLayout.WEST, status, 10, SpringLayout.EAST, addURLBTN);
         //init panels
         urlsPanel = new URLsPanel(new Dimension(350, 485), backend);
         categoriesPanel = new CategoryPanel(new Dimension(150, 485), backend);
@@ -154,20 +164,20 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
 
     }
 
-    public void showGUI(){
+    public void showGUI() {
         this.setVisible(true);
         this.pack();
         this.setLocationRelativeTo(null);
     }
 
-    private void addNewCategory(){
+    private void addNewCategory() {
         String inputValue = JOptionPane.showInputDialog("Please input the name of Category");
-        if(inputValue != null &&!inputValue.equals("")){
+        if (inputValue != null && !inputValue.equals("")) {
             backend.addCategory(inputValue);
         }
     }
 
-    private void saveAndExit(){
+    private void saveAndExit() {
         try {
             backend.saveDataToFile();
         } catch (FileNotFoundException e1) {
@@ -178,76 +188,114 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
         System.exit(0);
     }
 
+    private void startStopProxyController() throws IOException {
+        if (stopStartStatus) { // start -> stop
+            backend.stopProxy();
+            status.setText("<html> Status : OFF<BR> Port : <BR> IP : 127.0.0.1<BR>Select checkboxes to allow traffic</html>");
+            startStopBTN.setIcon(new ImageIcon("./icons/stop.png"));
+            stopStartStatus = false;
+        } else { // stop -> start
+            makeBlockList();
+            backend.startProxy();
+            status.setText("<html> Status : ON<BR> Port : " + ((SocketListener) backend.r).serverPort + "<BR> IP : 127.0.0.1<BR>" +
+                    "Select checkboxes to allow traffic </html>");
+            startStopBTN.setIcon(new ImageIcon("./icons/start.png"));
+            stopStartStatus = true;
+        }
+    }
+
+    private void makeBlockList(){
+        backend.makeBlockedList();
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         // TODO: 2019-03-08 declear functionality of start and stop
-        if(e.getSource() == sysTrayStartStop)
+        if (e.getSource() == sysTrayStartStop) {
+            try {
+                startStopProxyController();
+            } catch (IOException e1) {
+                System.err.println("can not stop server");
+            }
             showGUI();
-        else if(e.getSource() == sysTrayExit){
+        } else if (e.getSource() == sysTrayExit) {
             saveAndExit();
         }
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if(e.getSource() == trayIcon && SwingUtilities.isLeftMouseButton(e)){
+        if (e.getSource() == trayIcon && SwingUtilities.isLeftMouseButton(e)) {
             showGUI();
-        }
-        else if(e.getSource().equals(addCategoryBTN)){
+        } else if (e.getSource().equals(addCategoryBTN)) {
             addNewCategory();
-        }
-        else if(e.getSource().equals(addURLBTN)){
+        } else if (e.getSource().equals(addURLBTN)) {
             AddNewUrlPanel tmp = new AddNewUrlPanel(backend);
-        }
-        else if(e.getSource().equals(exitBTN)){
+        } else if (e.getSource().equals(exitBTN)) {
             saveAndExit();
-        }
-        else if(e.getSource().equals(startStopBTN)){
-            backend.startProxy();
+        } else if (e.getSource().equals(startStopBTN)) {
+            try {
+                startStopProxyController();
+            } catch (IOException e1) {
+                System.err.println("Can not stop server");
+            }
         }
     }
+
     @Override
     public void mousePressed(MouseEvent e) {
     }
+
     @Override
     public void mouseReleased(MouseEvent e) {
 
     }
+
     @Override
     public void mouseEntered(MouseEvent e) {
 
     }
+
     @Override
     public void mouseExited(MouseEvent e) {
 
     }
+
     @Override
     public void windowOpened(WindowEvent e) {
 
     }
+
     @Override
     public void windowClosing(WindowEvent e) {
         setVisible(false);
         saveAndExit();
-        try { Thread.sleep(5000); }
-        catch (InterruptedException ex) { }
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ex) {
+        }
     }
+
     @Override
     public void windowClosed(WindowEvent e) {
 
     }
+
     @Override
     public void windowIconified(WindowEvent e) {
 
     }
+
     @Override
     public void windowDeiconified(WindowEvent e) {
 
     }
+
     @Override
     public void windowActivated(WindowEvent e) {
 
     }
+
     @Override
     public void windowDeactivated(WindowEvent e) {
 

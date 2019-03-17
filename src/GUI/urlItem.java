@@ -9,6 +9,7 @@ public class urlItem extends ListItem {
     private int textWidth;
     public JButton deleteBTN;
     private String UrlAddress;
+    private String rawUrl; //this url does not have http://
 
     public urlItem(Dimension dim, String urlAdd) {
         super(dim);
@@ -59,5 +60,12 @@ public class urlItem extends ListItem {
 
     public String getUrlAddress(){
         return urlText.getText();
+    }
+
+    public void setRawUrl(String inpUrl){
+        rawUrl = inpUrl;
+    }
+    public String getRawUrl(){
+        return rawUrl;
     }
 }

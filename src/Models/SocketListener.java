@@ -1,12 +1,8 @@
 package Models;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,7 +17,7 @@ public class SocketListener implements Runnable {
         this.back = back;
         startStop = true;
         pool = Executors.newCachedThreadPool();
-        serverPort = 7653;
+        serverPort = 8085;
         configServerPort();
     }
 
@@ -37,8 +33,10 @@ public class SocketListener implements Runnable {
         }
     }
 
-    public void stopServer() {
+    public void stopServer() throws IOException {
+        startStop = false;
         pool.shutdown();
+        server.close();
     }
 
     public void resumServer() {
@@ -50,13 +48,15 @@ public class SocketListener implements Runnable {
 
     @Override
     public void run() {
+        System.out.println("Proxy Started!!! Listening...");
         while (startStop) {
             Socket request = null;
             try {
+                System.err.println("new tcp socket");
                 request = server.accept();
                 pool.execute(new RequestHandler(request));
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("socket closed, go to closing");
             }
         }
     }
