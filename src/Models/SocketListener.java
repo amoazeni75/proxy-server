@@ -48,15 +48,15 @@ public class SocketListener implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Proxy Started!!! Listening...");
+        //System.out.println("Proxy Started!!! Listening...");
         while (startStop) {
             Socket request = null;
             try {
-                System.err.println("new tcp socket");
+                //System.err.println("new tcp socket");
                 request = server.accept();
                 pool.execute(new RequestHandler(request));
             } catch (IOException e) {
-                System.out.println("socket closed, go to closing");
+                //System.out.println("socket closed, go to closing");
             }
         }
     }

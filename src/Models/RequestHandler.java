@@ -57,7 +57,7 @@ public class RequestHandler implements Runnable {
             requestString = proxyToClientBr.readLine();
         } catch (IOException e) {
             //e.printStackTrace();
-            System.err.println("Error reading request from client");
+            //System.err.println("Error reading request from client");
             return;
         }
 
@@ -80,7 +80,7 @@ public class RequestHandler implements Runnable {
         }
 
         // Check if site is blocked
-        System.out.println("site requested : " + urlString);
+        //System.out.println("site requested : " + urlString);
         if (Backend.checkValidityOfURL(urlString)) {
             blockedSiteRequested();
             return;
@@ -88,7 +88,7 @@ public class RequestHandler implements Runnable {
 
         //Check request type
         if (request.equals("CONNECT")) {
-            System.out.println("HTTPS Request for : " + urlString + "\n");
+            //System.out.println("HTTPS Request for : " + urlString + "\n");
             handleHTTPSRequest(urlString);
         } else
             sendNonCachedToClient(urlString);
@@ -377,7 +377,7 @@ public class RequestHandler implements Runnable {
             bufferedWriter.flush();
             clientSocket.close();
         } catch (IOException e) {
-            System.out.println("Error writing to client when requested a blocked site");
+            //System.out.println("Error writing to client when requested a blocked site");
             e.printStackTrace();
         }
     }

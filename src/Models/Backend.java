@@ -14,8 +14,8 @@ import java.util.ArrayList;
 
 public class Backend {
     private static ArrayList<String> blockedList;
-    public ArrayList<ListItem> categories;
-    public ArrayList<ArrayList<ListItem>> urls;
+    public static ArrayList<ListItem> categories;
+    public static ArrayList<ArrayList<ListItem>> urls;
     private Dimension screenDimention;
     private int itemH;
     private int categoryWidth;
@@ -57,14 +57,18 @@ public class Backend {
      * @param categoryID
      */
     public void addNewUrl(String url, int categoryID) {
-        urls.get(categoryID).add(new urlItem(new Dimension(urlWidth, itemH), url));
+        ListItem tmpURL = new urlItem(new Dimension(urlWidth, itemH), url);
+        urls.get(categoryID).add(tmpURL);
         ui.urlsPanel.itemsList.updateListView(urls.get(categoryID));
-        ((urlItem) urls.get(categoryID).get(urls.get(categoryID).size() - 1)).deleteBTN.addMouseListener(ui.urlsPanel);
+        ((urlItem) tmpURL).deleteBTN.addMouseListener(ui.urlsPanel);
+        ((urlItem) tmpURL).setRawUrl(prepareBlockedURL(url));
+        ((urlItem) tmpURL).selectChk.setEnabled(false);
         if (((categoryItem) (categories.get(categoryID))).selectChk.isSelected()) {
-            ((urlItem) urls.get(categoryID).get(urls.get(categoryID).size() - 1)).selectChk.setSelected(true);
+            ((urlItem) tmpURL).selectChk.setSelected(true);
+        } else {
+            blockedList.add(((urlItem) tmpURL).getRawUrl());
         }
         ui.categoriesPanel.setSelected(null, categoryID);
-        ((urlItem) urls.get(categoryID).get(urls.get(categoryID).size() - 1)).setRawUrl(prepareBlockedURL(url));
     }
 
     /**
@@ -74,6 +78,7 @@ public class Backend {
      * @param UrlID
      */
     public void deleteURL(int catID, int UrlID) {
+        blockedList.remove(((urlItem) urls.get(catID).remove(UrlID)).getRawUrl());
         urls.get(catID).remove(UrlID);
         ui.urlsPanel.itemsList.updateListView(urls.get(catID));
     }
@@ -121,11 +126,20 @@ public class Backend {
     }
 
     public static boolean checkValidityOfURL(String address) {
-        if(blockedList.contains(address))
-            return true;
-        else
-            return false;
-    }
+        String temp = prepareBlockedURL(address);
+        System.out.println(temp);
+        for (int i = 0; i < urls.size(); i++) {
+            for (int j = 0; j < urls.get(i).size(); j++) {
+                if (((urlItem) urls.get(i).get(j)).getRawUrl().equals(temp)) {
+                    if (((categoryItem) categories.get(i)).selectChk.isSelected())
+                        return false;
+                    else
+                        return true;
+                }
+            }
+        }
+        return true;
+     }
 
     public void startProxy() {
         r = new SocketListener(this);
@@ -137,7 +151,7 @@ public class Backend {
         ((SocketListener) r).stopServer();
     }
 
-    private String prepareBlockedURL(String inp) {
+    private static String prepareBlockedURL(String inp) {
         String subInput = inp.substring(inp.indexOf('/') + 2);
         //check if sub string has www. we will trim it
         if (subInput.length() < 4) { // sub string has not www. and it's url is shorter than 4 character
@@ -149,14 +163,14 @@ public class Backend {
                 return subInput;
         }
     }
-    
-    public void makeBlockedList(){
+
+    public void makeBlockedList() {
         blockedList.clear();
         for (int i = 0; i < categories.size(); i++) {
-            if(!((categoryItem)categories.get(i)).selectChk.isSelected()){
+            if (!((categoryItem) categories.get(i)).selectChk.isSelected()) {
                 for (int j = 0; j < urls.get(i).size(); j++) {
-                    if(!((urlItem)urls.get(i).get(j)).selectChk.isSelected()){
-                        blockedList.add(((urlItem)urls.get(i).get(j)).getRawUrl());
+                    if (!((urlItem) urls.get(i).get(j)).selectChk.isSelected()) {
+                        blockedList.add(((urlItem) urls.get(i).get(j)).getRawUrl());
                     }
                 }
             }
