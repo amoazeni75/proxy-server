@@ -1,10 +1,15 @@
+/**
+ * Author : S.Alireza  Moazeni
+ * Student Number : 9423110
+ * Project 1 : Proxy Server
+ * Web Programming winter_spring 1397_1398
+ */
 package GUI;
 
 import Models.Backend;
 import Models.SocketListener;
 
 import javax.imageio.ImageIO;
-import javax.sound.midi.Soundbank;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -195,17 +200,12 @@ public class MainFrame extends JFrame implements ActionListener, MouseListener, 
             startStopBTN.setIcon(new ImageIcon("./icons/stop.png"));
             stopStartStatus = false;
         } else { // stop -> start
-            makeBlockList();
             backend.startProxy();
             status.setText("<html> Status : ON<BR> Port : " + ((SocketListener) backend.r).serverPort + "<BR> IP : 127.0.0.1<BR>" +
                     "Select checkboxes to allow traffic </html>");
             startStopBTN.setIcon(new ImageIcon("./icons/start.png"));
             stopStartStatus = true;
         }
-    }
-
-    private void makeBlockList(){
-        backend.makeBlockedList();
     }
 
     @Override

@@ -1,3 +1,9 @@
+/**
+ * Author : S.Alireza  Moazeni
+ * Student Number : 9423110
+ * Project 1 : Proxy Server
+ * Web Programming winter_spring 1397_1398
+ */
 package GUI;
 
 import Models.Backend;
@@ -8,11 +14,11 @@ import java.awt.event.MouseEvent;
 
 
 public class CategoryPanel extends ScrollablePanel {
-
+    private Backend back;
     public CategoryPanel(Dimension dim, Backend back) {
         super(dim, back);
+        this.back = back;
         this.setBackground(Color.BLUE);
-        //addTestComponent();
     }
 
     public void setSelected(MouseEvent e,int catid){
@@ -59,23 +65,12 @@ public class CategoryPanel extends ScrollablePanel {
         }
     }
 
-//    private void addTestComponent(){
-//        ArrayList<ListItem> mm = new ArrayList<>();
-//        for (int i = 0; i < 100; i++){
-//            ListItem li = new categoryItem(new Dimension(screenSize.width, itemH));
-//
-//            itemsList.add(li);
-//            if(i == 0)
-//                sp.putConstraint(SpringLayout.NORTH, li, 2, SpringLayout.NORTH, itemsList);
-//            else
-//                sp.putConstraint(SpringLayout.NORTH, li, 2, SpringLayout.SOUTH, mm.get(mm.size() - 1));
-//            sp.putConstraint(SpringLayout.WEST, li, 0, SpringLayout.WEST, itemsList);
-//            ((categoryItem)li).setLabelText(Integer.toString(i));
-//            mm.add(li);
-//        }
-//        if(mm.size() * itemH > screenSize.height){
-//            itemsList.setPreferredSize(new Dimension(screenSize.width, mm.size() * (itemH + 2) + 5));
-//        }
-//    }
-
+    public void deleteCategory(MouseEvent e){
+        for (int i = 0; i < Backend.categories.size(); ++i){
+            if(e.getSource().equals(((categoryItem)Backend.categories.get(i)).deleteButton)){
+                back.deleteCategory(i);
+                break;
+            }
+        }
+    }
 }

@@ -1,3 +1,9 @@
+/**
+ * Author : S.Alireza  Moazeni
+ * Student Number : 9423110
+ * Project 1 : Proxy Server
+ * Web Programming winter_spring 1397_1398
+ */
 package GUI;
 
 import Models.Backend;
@@ -43,11 +49,15 @@ public class ScrollablePanel extends JPanel implements MouseListener , ActionLis
     public void deleteUrl(MouseEvent e){
 
     }
+    public void deleteCategory(MouseEvent e){
+
+    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
         setSelected(e, -1);
         deleteUrl(e);
+        deleteCategory(e);
     }
 
     @Override

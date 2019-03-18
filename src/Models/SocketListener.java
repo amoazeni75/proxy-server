@@ -1,3 +1,9 @@
+/**
+ * Author : S.Alireza  Moazeni
+ * Student Number : 9423110
+ * Project 1 : Proxy Server
+ * Web Programming winter_spring 1397_1398
+ */
 package Models;
 
 import java.io.IOException;
@@ -6,6 +12,10 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * This class run a listener on a specific socket
+ * and create request handler object for each tcp connection
+ */
 public class SocketListener implements Runnable {
     public ExecutorService pool;
     public boolean startStop;
@@ -17,10 +27,13 @@ public class SocketListener implements Runnable {
         this.back = back;
         startStop = true;
         pool = Executors.newCachedThreadPool();
-        serverPort = 8085;
+        serverPort = 8086;
         configServerPort();
     }
 
+    /**
+     * this function try to find free port to start proxy server
+     */
     private void configServerPort() {
         boolean needChangePort = true;
         while (needChangePort) {
@@ -33,12 +46,19 @@ public class SocketListener implements Runnable {
         }
     }
 
+    /**
+     * to stop server we must close thread pool and socket
+     * @throws IOException
+     */
     public void stopServer() throws IOException {
         startStop = false;
         pool.shutdown();
         server.close();
     }
 
+    /**
+     * to resume server we init new port and thread pool
+     */
     public void resumServer() {
         pool = Executors.newCachedThreadPool();
         startStop = true;
@@ -48,15 +68,16 @@ public class SocketListener implements Runnable {
 
     @Override
     public void run() {
-        //System.out.println("Proxy Started!!! Listening...");
+        // we must listen for incoming request to open tcp sockets always
         while (startStop) {
             Socket request = null;
             try {
-                //System.err.println("new tcp socket");
                 request = server.accept();
+
+                //handle each accepted socket separately
                 pool.execute(new RequestHandler(request));
             } catch (IOException e) {
-                //System.out.println("socket closed, go to closing");
+                //System.out.println("TCP connection did not established...");
             }
         }
     }

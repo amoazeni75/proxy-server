@@ -1,4 +1,12 @@
+/**
+ * Author : S.Alireza  Moazeni
+ * Student Number : 9423110
+ * Project 1 : Proxy Server
+ * Web Programming winter_spring 1397_1398
+ */
 package GUI;
+
+import Models.Backend;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,10 +62,6 @@ public class urlItem extends ListItem {
 
     }
 
-    public void setUrlText(String txt){
-        urlText.setText(txt);
-    }
-
     public String getUrlAddress(){
         return urlText.getText();
     }
@@ -65,7 +69,13 @@ public class urlItem extends ListItem {
     public void setRawUrl(String inpUrl){
         rawUrl = inpUrl;
     }
+
+    /**
+     * this function get text in text filed then remove http://
+     * @return
+     */
     public String getRawUrl(){
+        rawUrl = Backend.prepareBlockedURL(urlText.getText());
         return rawUrl;
     }
 }

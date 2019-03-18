@@ -1,3 +1,9 @@
+/**
+ * Author : S.Alireza  Moazeni
+ * Student Number : 9423110
+ * Project 1 : Proxy Server
+ * Web Programming winter_spring 1397_1398
+ */
 package Models;
 
 import javax.imageio.ImageIO;
@@ -5,6 +11,11 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 
+/**
+ * in this class we handle each request
+ * if request is blocked by user we return 403 forbidden message
+ * else we transfer received packet to browser
+ */
 public class RequestHandler implements Runnable {
 
     /**
@@ -50,20 +61,19 @@ public class RequestHandler implements Runnable {
      */
     @Override
     public void run() {
-
         // Get Request from client
         String requestString;
         try {
             requestString = proxyToClientBr.readLine();
         } catch (IOException e) {
             //e.printStackTrace();
-            //System.err.println("Error reading request from client");
+            //System.out.println("Error reading request from client");
             return;
         }
 
         // Parse out URL
-        //System.out.println("Reuest Received " + requestString);
 
+        //System.out.println("Reuest Received " + requestString);
         // Get the Request type
         String request = requestString.substring(0, requestString.indexOf(' '));
 
@@ -79,20 +89,23 @@ public class RequestHandler implements Runnable {
             urlString = temp + urlString;
         }
 
+
         // Check if site is blocked
-        //System.out.println("site requested : " + urlString);
         if (Backend.checkValidityOfURL(urlString)) {
+            //System.out.println("Blocked site requested : " + urlString);
             blockedSiteRequested();
             return;
         }
 
-        //Check request type
+
+        // Check request type
         if (request.equals("CONNECT")) {
             //System.out.println("HTTPS Request for : " + urlString + "\n");
             handleHTTPSRequest(urlString);
-        } else
+        } else {
+            //System.out.println("HTTP GET for : " + urlString + "\n");
             sendNonCachedToClient(urlString);
-
+        }
     }
 
     /**
@@ -369,16 +382,33 @@ public class RequestHandler implements Runnable {
      */
     private void blockedSiteRequested() {
         try {
-            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-            String line = "HTTP/1.0 403 Access Forbidden \n" +
-                    "User-Agent: ProxyServer/1.0\n" +
+            DataOutputStream dOut = new DataOutputStream(clientSocket.getOutputStream());
+            String line = "HTTP/1.0 200 OK\n" +
+                    "Proxy-agent: ProxyServer/1.0\n" +
                     "\r\n";
-            bufferedWriter.write(line);
-            bufferedWriter.flush();
+            File file = new File("./html/403page.html");
+            byte[] bArray = readFileToByteArray(file);
+            dOut.write(line.getBytes());
+            dOut.write(bArray);
+            dOut.flush();
+            dOut.close();
             clientSocket.close();
-        } catch (IOException e) {
-            //System.out.println("Error writing to client when requested a blocked site");
-            e.printStackTrace();
+        } catch (IOException e) {}
+    }
+
+    private byte[] readFileToByteArray(File file) {
+        FileInputStream fis = null;
+        // Creating a byte array using the length of the file
+        // file.length returns long which is cast to int
+        byte[] bArray = new byte[(int) file.length()];
+        try {
+            fis = new FileInputStream(file);
+            fis.read(bArray);
+            fis.close();
+
+        } catch (IOException ioExp) {
+            ioExp.printStackTrace();
         }
+        return bArray;
     }
 }

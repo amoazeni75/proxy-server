@@ -1,3 +1,9 @@
+/**
+ * Author : S.Alireza  Moazeni
+ * Student Number : 9423110
+ * Project 1 : Proxy Server
+ * Web Programming winter_spring 1397_1398
+ */
 package GUI;
 
 import javax.swing.*;
@@ -19,6 +25,10 @@ public class ListItemPanel extends JPanel {
         setOpaque(false);
     }
 
+    /**
+     * update view with new objects
+     * @param items
+     */
     public void updateListView(ArrayList<ListItem> items){
         this.setPreferredSize(screenSize);
         Component[] components = this.getComponents();
@@ -30,7 +40,7 @@ public class ListItemPanel extends JPanel {
         this.revalidate();
         this.repaint();
 
-        if(items.size() == 0)
+        if(items == null || items.size() == 0)
             return;
         int itemH = items.get(0).getPreferredSize().height;
         for (int i = 0; i < items.size(); i++){

@@ -1,3 +1,9 @@
+/**
+ * Author : S.Alireza  Moazeni
+ * Student Number : 9423110
+ * Project 1 : Proxy Server
+ * Web Programming winter_spring 1397_1398
+ */
 package Models;
 
 import GUI.ListItem;
@@ -13,7 +19,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class Backend {
-    private static ArrayList<String> blockedList;
     public static ArrayList<ListItem> categories;
     public static ArrayList<ArrayList<ListItem>> urls;
     private Dimension screenDimention;
@@ -27,7 +32,6 @@ public class Backend {
     public Backend(Dimension screenD, int urlW, int categoryW, MainFrame gui) {
         categories = new ArrayList<>();
         urls = new ArrayList<>();
-        blockedList = new ArrayList<>();
         ui = gui;
         screenDimention = screenD;
         itemH = 50;
@@ -42,9 +46,11 @@ public class Backend {
      * @param categoryName
      */
     public void addCategory(String categoryName) {
-        categories.add(new categoryItem(new Dimension(categoryWidth, itemH), categoryName));
-        categories.get(categories.size() - 1).addMouseListener(ui.categoriesPanel);
-        ((categoryItem) (categories.get(categories.size() - 1))).selectChk.addActionListener(ui.categoriesPanel);
+        ListItem tmpCategory = new categoryItem(new Dimension(categoryWidth, itemH), categoryName);
+        categories.add(tmpCategory);
+        tmpCategory.addMouseListener(ui.categoriesPanel);
+        ((categoryItem) tmpCategory).deleteButton.addMouseListener(ui.categoriesPanel);
+        ((categoryItem) tmpCategory).selectChk.addActionListener(ui.categoriesPanel);
         ArrayList<ListItem> tmpUrl = new ArrayList<>();
         urls.add(tmpUrl);
         ui.categoriesPanel.itemsList.updateListView(categories);
@@ -59,14 +65,14 @@ public class Backend {
     public void addNewUrl(String url, int categoryID) {
         ListItem tmpURL = new urlItem(new Dimension(urlWidth, itemH), url);
         urls.get(categoryID).add(tmpURL);
+
+        //update url panel with new url
         ui.urlsPanel.itemsList.updateListView(urls.get(categoryID));
         ((urlItem) tmpURL).deleteBTN.addMouseListener(ui.urlsPanel);
         ((urlItem) tmpURL).setRawUrl(prepareBlockedURL(url));
-        ((urlItem) tmpURL).selectChk.setEnabled(false);
+
         if (((categoryItem) (categories.get(categoryID))).selectChk.isSelected()) {
             ((urlItem) tmpURL).selectChk.setSelected(true);
-        } else {
-            blockedList.add(((urlItem) tmpURL).getRawUrl());
         }
         ui.categoriesPanel.setSelected(null, categoryID);
     }
@@ -78,9 +84,22 @@ public class Backend {
      * @param UrlID
      */
     public void deleteURL(int catID, int UrlID) {
-        blockedList.remove(((urlItem) urls.get(catID).remove(UrlID)).getRawUrl());
         urls.get(catID).remove(UrlID);
         ui.urlsPanel.itemsList.updateListView(urls.get(catID));
+    }
+
+    /**
+     * this function will remove specified category
+     * @param catID : id of category that want to delete
+     */
+    public void deleteCategory(int catID){
+        categories.remove(catID);
+        urls.remove(catID);
+        if(categories.size() > 0)
+            ui.categoriesPanel.setSelected(null, 0);
+        else
+            ui.urlsPanel.itemsList.updateListView(null);
+        ui.categoriesPanel.itemsList.updateListView(categories);
     }
 
     /**
@@ -125,20 +144,28 @@ public class Backend {
         }
     }
 
+    /**
+     * this function will check whether url is valid or not
+     * @param address : the url that want to check
+     * @return true if url is blocked
+     */
     public static boolean checkValidityOfURL(String address) {
+
+        //first we remove http://www. from url is exist
         String temp = prepareBlockedURL(address);
-        System.out.println(temp);
+
+        //check url among all urls
         for (int i = 0; i < urls.size(); i++) {
             for (int j = 0; j < urls.get(i).size(); j++) {
                 if (((urlItem) urls.get(i).get(j)).getRawUrl().equals(temp)) {
-                    if (((categoryItem) categories.get(i)).selectChk.isSelected())
+                    if (((urlItem) urls.get(i).get(j)).selectChk.isSelected())
                         return false;
                     else
                         return true;
                 }
             }
         }
-        return true;
+        return false;
      }
 
     public void startProxy() {
@@ -151,7 +178,12 @@ public class Backend {
         ((SocketListener) r).stopServer();
     }
 
-    private static String prepareBlockedURL(String inp) {
+    /**
+     * this function will remove http://www. from entered url
+     * @param inp : input url
+     * @return : raw url
+     */
+    public static String prepareBlockedURL(String inp) {
         String subInput = inp.substring(inp.indexOf('/') + 2);
         //check if sub string has www. we will trim it
         if (subInput.length() < 4) { // sub string has not www. and it's url is shorter than 4 character
@@ -164,16 +196,4 @@ public class Backend {
         }
     }
 
-    public void makeBlockedList() {
-        blockedList.clear();
-        for (int i = 0; i < categories.size(); i++) {
-            if (!((categoryItem) categories.get(i)).selectChk.isSelected()) {
-                for (int j = 0; j < urls.get(i).size(); j++) {
-                    if (!((urlItem) urls.get(i).get(j)).selectChk.isSelected()) {
-                        blockedList.add(((urlItem) urls.get(i).get(j)).getRawUrl());
-                    }
-                }
-            }
-        }
-    }
 }
