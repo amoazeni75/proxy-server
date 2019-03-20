@@ -150,14 +150,14 @@ public class Backend {
      * @return true if url is blocked
      */
     public static boolean checkValidityOfURL(String address) {
-
         //first we remove http://www. from url is exist
         String temp = prepareBlockedURL(address);
 
         //check url among all urls
         for (int i = 0; i < urls.size(); i++) {
             for (int j = 0; j < urls.get(i).size(); j++) {
-                if (((urlItem) urls.get(i).get(j)).getRawUrl().equals(temp)) {
+                String ttt = ((urlItem) urls.get(i).get(j)).getRawUrl();
+                if (temp.contains(ttt) || ttt.contains(temp)) {
                     if (((urlItem) urls.get(i).get(j)).selectChk.isSelected())
                         return false;
                     else

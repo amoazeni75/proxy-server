@@ -72,6 +72,7 @@ public class SocketListener implements Runnable {
         while (startStop) {
             Socket request = null;
             try {
+                //System.out.println("new socket");
                 request = server.accept();
 
                 //handle each accepted socket separately
