@@ -7,8 +7,11 @@ after defining urls, you can start proxy, now by starting proxy server you will 
   in the last, each category and urls that you defined will be saved for next running of application in the file</p>
   <h1>some technical points</h1>
   <p>This Project has two packages, GUI and Models, in the GUI package you can find classes related to user interface and in the Models Packages You will see three Classes, in the next we will provide brief information about each of them.</p>
- <ul>
- <li>Backend.java</li>
-   <li>SocketListener.java</li>
-   <li>RequestHandler.java</li>
-  </ul>
+ <dl>
+ <dt>Backend.java</dt>
+ <dd> -in this class we process all things such as loading saved categories and urls, saving categories and urls, implementing buttons action and anything related to backend.</dd> 
+ <dt>SocketListener.java</dt>
+  <dd> in this class the application is listening on specific port and has a threadpool that make a tcp connection for each request and passes created socket to new RequestHandler object, we developed this part with multithreading because browsers like chrome support multi tab browsing</dd>
+ <dt>RequestHandler.java</dt>
+  <dd> this class will handle all things related to sending and receiving packets, in first step will detect target url from the header of first http packet then check detected url with blocking urls list, according to the rules this connection will we continue or will be closed by sending 403 forbidden response.</dd>
+ </dl>
